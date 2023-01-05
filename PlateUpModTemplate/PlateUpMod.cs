@@ -74,6 +74,8 @@ public static class Scene_Changed_Patch
     public static void SceneChanged_Postfix(ref InteractionData data)
     {
         Debug.Log("ping detected");
+        TestClass t = World.DefaultGameObjectInjectionWorld.GetExistingSystem<TestClass>();
+        t.IncrementEventNumByOne(data.Interactor);
         //if (PlateUpMod.emoteTracker == null)
         //{
         //    Debug.Log("Creating emote tracker");
@@ -154,14 +156,6 @@ public class EmoteView : UpdatableObjectView<EmoteView.ViewData>
                 }, MessageType.SpecificViewUpdate);
             }
         }
-
-        public void IncrementEventNumByOne(Entity eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee)
-        {
-            CEmoteData _data;
-            bool sex = Require<CEmoteData>(eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, out _data);
-            _data.eventNum++;
-            EntityManager.SetComponentData(eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, _data);
-        }
     }
 
     // you must mark your ViewData as MessagePackObject and mark each field with a key
@@ -195,26 +189,45 @@ public class EmoteView : UpdatableObjectView<EmoteView.ViewData>
     }
 }
 
-public class IncrementEmote : InteractionSystem, IModSystem
+//public class IncrementEmote : InteractionSystem, IModSystem
+//{
+//    protected override InteractionType RequiredType => InteractionType.Notify;
+
+//    protected override bool AllowAnyMode => true;
+
+//    private CEmoteData _data;
+
+//    protected override bool IsPossible(ref InteractionData data)
+//    {
+//        bool sex = Require<CEmoteData>(data.Interactor, out _data);
+//        Debug.Log($"--------------  why isn't it possible   {sex}");
+//        return sex;
+//    }
+
+//    protected override void Perform(ref InteractionData data)
+//    {
+//        Debug.Log($"--------------  it's just not {_data}");
+
+//        _data.eventNum++;
+//        EntityManager.SetComponentData(data.Interactor, _data);
+//    }
+//}
+
+public class TestClass : GenericSystemBase, IModSystem
 {
-    protected override InteractionType RequiredType => InteractionType.Notify;
-
-    protected override bool AllowAnyMode => true;
-
     private CEmoteData _data;
-
-    protected override bool IsPossible(ref InteractionData data)
+    protected override void OnUpdate()
     {
-        bool sex = Require<CEmoteData>(data.Interactor, out _data);
-        Debug.Log($"--------------  why isn't it possible   {sex}");
-        return sex;
+
     }
-
-    protected override void Perform(ref InteractionData data)
+    public void IncrementEventNumByOne(Entity eeeeeeeeeeeeeeee)
     {
-        Debug.Log($"--------------  it's just not {_data}");
-
-        _data.eventNum++;
-        EntityManager.SetComponentData(data.Interactor, _data);
+        bool sex = Require(eeeeeeeeeeeeeeee, out _data);
+        if (sex)
+        {
+            _data.eventNum++;
+            Debug.Log($"{eeeeeeeeeeeeeeee}'s eventNum is now {_data.eventNum}");
+            EntityManager.SetComponentData(eeeeeeeeeeeeeeee, _data);
+        }
     }
 }
